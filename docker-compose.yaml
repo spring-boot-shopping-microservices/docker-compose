@@ -1,6 +1,19 @@
 version: "4"
 
 services:
+  # MongoDB Service for Product Service
+  mongo-product-service:
+    image: mongo
+    container_name: mongo-product-service
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-product-service:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_PRODUCT_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PRODUCT_ROOT_PASSWORD}
+    restart: always
+
   # PostgreSQL Service for Keycloak
   postgres-keycloak:
     image: postgres
@@ -67,3 +80,14 @@ services:
       - zipkin
       - discovery-server
       - keycloak
+
+  ## Product-Service Docker Compose Config
+  product-service:
+    image: aamirxshaikh/product-service:latest
+    container_name: product-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mongo-product-service
+      - discovery-server
+      - api-gateway
