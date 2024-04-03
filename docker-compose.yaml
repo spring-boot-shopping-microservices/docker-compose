@@ -1,6 +1,21 @@
 version: "4"
 
 services:
+  # PostgreSQL Service for Order Service
+  postgres-order-service:
+    image: postgres
+    container_name: postgres-order-service
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: order
+      POSTGRES_USER: ${POSTGRES_ORDER_ROOT_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_ORDER_ROOT_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-order-service:/data/postgres
+    restart: always
+
   # MongoDB Service for Product Service
   mongo-product-service:
     image: mongo
@@ -89,5 +104,18 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - mongo-product-service
+      - discovery-server
+      - api-gateway
+
+  ## Order-Service Docker Compose Config
+  order-service:
+    image: aamirxshaikh/order-service:latest
+    container_name: order-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-order-service
+      - kafka
+      - zipkin
       - discovery-server
       - api-gateway
