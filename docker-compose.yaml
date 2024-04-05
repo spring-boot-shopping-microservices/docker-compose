@@ -16,6 +16,22 @@ services:
       - ./postgres-order-service:/data/postgres
     restart: always
 
+  # PostgreSQL Service for Inventory Service
+  postgres-inventory-service:
+    image: postgres
+    container_name: postgres-inventory-service
+    ports:
+      - "5433:5432"
+    command: -p 5433
+    environment:
+      POSTGRES_DB: inventory
+      POSTGRES_USER: ${POSTGRES_INVENTORY_ROOT_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_INVENTORY_ROOT_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-inventory-service:/data/postgres
+    restart: always
+
   # MongoDB Service for Product Service
   mongo-product-service:
     image: mongo
@@ -141,5 +157,16 @@ services:
       - postgres-order-service
       - kafka
       - zipkin
+      - discovery-server
+      - api-gateway
+
+  ## Inventory-Service Docker Compose Config
+  inventory-service:
+    image: aamirxshaikh/inventory-service:latest
+    container_name: inventory-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-inventory-service
       - discovery-server
       - api-gateway
