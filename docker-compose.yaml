@@ -174,3 +174,15 @@ services:
       - postgres-inventory-service
       - discovery-server
       - api-gateway
+
+  ## Notification-Service Docker Compose Config
+  notification-service:
+    image: aamirxshaikh/notification-service:latest
+    container_name: notification-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - zipkin
+      - kafka
+      - discovery-server
+      - api-gateway
