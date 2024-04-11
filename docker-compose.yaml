@@ -186,3 +186,35 @@ services:
       - kafka
       - discovery-server
       - api-gateway
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - discovery-server
+      - api-gateway
+      - product-service
+      - order-service
+      - inventory-service
+      - notification-service
+    restart: always
+
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    links:
+      - prometheus:prometheus
+    user: '0'
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_GF_SECURITY_ADMIN_PASSWORD}
+    restart: always
