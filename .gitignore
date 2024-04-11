@@ -40,3 +40,4 @@ keycloak-postgres-data
 mongo-product-service
 postgres-inventory-service
 postgres-order-service
+grafana
